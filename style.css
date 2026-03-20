@@ -66,26 +66,26 @@
 /* --- Dark Theme --- */
 [data-theme="dark"] {
   --bg-page: #09090b;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-hover: rgba(255, 255, 255, 0.06);
-  --bg-input: rgba(255, 255, 255, 0.06);
-  --bg-input-focus: rgba(255, 255, 255, 0.1);
-  --border-card: rgba(255, 255, 255, 0.08);
-  --border-input: rgba(255, 255, 255, 0.08);
-  --border-input-focus: #8b5cf6;
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-tertiary: #52525b;
+  --bg-card: rgba(24, 24, 27, 0.98);
+  --bg-card-hover: rgba(30, 30, 35, 0.98);
+  --bg-input: rgba(39, 39, 42, 0.8);
+  --bg-input-focus: rgba(63, 63, 70, 0.8);
+  --border-card: rgba(255, 255, 255, 0.12);
+  --border-input: rgba(255, 255, 255, 0.1);
+  --border-input-focus: #a78bfa;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d1d6;
+  --text-tertiary: #71717a;
   --accent: #a78bfa;
-  --accent-hover: #8b5cf6;
-  --accent-subtle: rgba(167, 139, 250, 0.1);
-  --accent-glow: rgba(167, 139, 250, 0.2);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15);
-  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.25);
-  --shadow-btn: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-btn-hover: 0 4px 20px rgba(167,139,250,0.3);
+  --accent-hover: #c084fc;
+  --accent-subtle: rgba(167, 139, 250, 0.15);
+  --accent-glow: rgba(167, 139, 250, 0.25);
+  --shadow-card: 0 10px 30px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  --shadow-card-hover: 0 20px 40px -15px rgba(0,0,0,0.6);
+  --shadow-btn: 0 1px 2px rgba(0,0,0,0.5);
+  --shadow-btn-hover: 0 0 20px rgba(167,139,250,0.4);
   --result-gradient: linear-gradient(135deg, #a78bfa, #c084fc);
-  --track-bg: rgba(255,255,255,0.06);
+  --track-bg: rgba(255,255,255,0.1);
   --copied-bg: #22c55e;
 }
 
@@ -527,6 +527,66 @@ main {
   border-color: var(--accent);
 }
 
+/* --- Share Menu --- */
+.share-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.share-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--r-md);
+  padding: 8px;
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom center;
+  animation: menuIn 0.3s var(--ease-out);
+}
+
+.share-menu.hidden {
+  display: none;
+}
+
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.share-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  text-align: left;
+}
+
+.share-menu__item:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.share-menu__item svg {
+  opacity: 0.7;
+}
+
 /* --- Result Card --- */
 .card--result {
   text-align: center;
@@ -600,11 +660,11 @@ main {
 }
 
 .result__trust {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
   font-style: italic;
   margin-bottom: 24px;
-  opacity: 0.7;
+  font-weight: 500;
 }
 
 /* --- Shame Meter --- */

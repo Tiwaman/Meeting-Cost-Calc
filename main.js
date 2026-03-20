@@ -23,6 +23,9 @@ const durationSlider = $('#durationSlider');
 const durationVal    = $('#durationVal');
 const meetingType    = $('#meetingType');
 const presetBtns     = document.querySelectorAll('.preset-btn');
+const shareMenu      = $('#shareMenu');
+const copyTextBtn    = $('#copyTextBtn');
+const exportImgBtn   = $('#exportImgBtn');
 const headerTitle    = $('#headerTitle');
 const usefulInputs    = document.getElementsByName('useful');
 
@@ -225,10 +228,20 @@ function showResult() {
 }
 
 // --- Share / Copy ---
-async function shareResult() {
-  const { cost, message, shame, attendees, duration } = resultCard.dataset;
+function toggleShareMenu(e) {
+  e.stopPropagation();
+  shareMenu.classList.toggle('hidden');
+}
 
-  const emoji = message.includes('💀') ? '💀' : message.includes('😬') ? '😬' : message.includes('😭') ? '😭' : '👍';
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!shareMenu.classList.contains('hidden') && !e.target.closest('.share-container')) {
+    shareMenu.classList.add('hidden');
+  }
+});
+
+async function copyResultText() {
+  const { cost, shame, duration } = resultCard.dataset;
   const text = `I just calculated my meeting cost.
 
 ${formatCurrency(Number(cost))} for ${duration} mins 😬
@@ -239,27 +252,49 @@ Try it: meeting-cost.app`;
 
   try {
     await navigator.clipboard.writeText(text);
+    const originalText = shareBtnText.textContent;
     shareBtnText.textContent = 'Copied! ✓';
     shareBtn.classList.add('copied');
+    shareMenu.classList.add('hidden');
+    
     setTimeout(() => {
-      shareBtnText.textContent = 'Share Result';
+      shareBtnText.textContent = originalText;
       shareBtn.classList.remove('copied');
-    }, 2500);
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    shareBtnText.textContent = 'Copied! ✓';
-    shareBtn.classList.add('copied');
+    }, 2000);
+  } catch (err) {
+    console.error('Copy failed', err);
+  }
+}
+
+async function downloadResultImage() {
+  const originalBtnText = shareBtnText.textContent;
+  shareBtnText.textContent = 'Generating...';
+  shareMenu.classList.add('hidden');
+
+  try {
+    const dataUrl = await htmlToImage.toPng(resultCard, {
+      backgroundColor: '#09090b',
+      style: {
+        transform: 'scale(1)',
+        margin: '0',
+      }
+    });
+
+    const link = document.createElement('a');
+    link.download = `meeting-cost-${Date.now()}.png`;
+    link.href = dataUrl;
+    link.click();
+    
+    shareBtnText.textContent = 'Downloaded! ✓';
     setTimeout(() => {
-      shareBtnText.textContent = 'Share Result';
-      shareBtn.classList.remove('copied');
-    }, 2500);
+      shareBtnText.textContent = originalBtnText;
+    }, 2000);
+  } catch (err) {
+    console.error('Export failed', err);
+    shareBtnText.textContent = 'Export Failed';
+    setTimeout(() => {
+      shareBtnText.textContent = originalBtnText;
+    }, 2000);
   }
 }
 
@@ -274,7 +309,9 @@ function recalculate() {
 
 // --- Event Listeners ---
 calculateBtn.addEventListener('click', showResult);
-shareBtn.addEventListener('click', shareResult);
+shareBtn.addEventListener('click', toggleShareMenu);
+copyTextBtn.addEventListener('click', copyResultText);
+exportImgBtn.addEventListener('click', downloadResultImage);
 recalcBtn.addEventListener('click', recalculate);
 themeToggle.addEventListener('click', toggleTheme);
 
