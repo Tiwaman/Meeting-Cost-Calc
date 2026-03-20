@@ -170,12 +170,12 @@ body {
 
 /* --- Layout --- */
 main {
-  width: 95%;
-  max-width: 800px;
-  padding: 40px 20px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px 16px 40px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 /* --- Top Bar --- */
@@ -252,8 +252,8 @@ main {
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: var(--r-xl);
-  padding: 28px 24px;
+  border-radius: var(--r-lg);
+  padding: 24px;
   box-shadow: var(--shadow-card);
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform var(--t-med);
 }
@@ -264,9 +264,9 @@ main {
 
 /* --- Input Card --- */
 .card--input {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   animation: fadeUp 0.5s var(--ease-out) both;
   transition: all 0.5s var(--ease-out);
 }
@@ -313,8 +313,8 @@ main {
 /* --- Salary Presets --- */
 .salary-presets {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   margin-bottom: 4px;
 }
 
@@ -632,7 +632,7 @@ main {
 }
 
 .result__amount {
-  font-size: 5.5rem;
+  font-size: 3.5rem;
   font-weight: 900;
   letter-spacing: -0.05em;
   background: var(--result-gradient);
@@ -763,53 +763,70 @@ main {
   animation: shake 0.4s ease;
 }
 
-/* --- Responsive (mobile-first, already sized for mobile) --- */
-@media (min-width: 640px) {
+/* --- Responsive --- */
+
+/* Tablet & Desktop (700px+) */
+@media (min-width: 700px) {
   main {
-    padding: 64px 20px 80px;
+    max-width: 800px;
+    padding: 60px 40px;
+    gap: 24px;
   }
 
   .header__title {
     font-size: 2.25rem;
   }
 
-  .result__amount {
-    font-size: 4rem;
+  .card {
+    padding: 40px;
+    border-radius: var(--r-xl);
   }
 
-  .card {
-    padding: 32px 28px;
+  .card--input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
+  }
+
+  .card--input > *:nth-child(5),
+  .card--input > *:nth-child(6) {
+    grid-column: span 2;
+  }
+
+  .salary-presets {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .result__amount {
+    font-size: 5.5rem;
   }
 }
 
-@media (max-width: 380px) {
+/* Small Devices (below 400px) */
+@media (max-width: 400px) {
   main {
-    padding: 28px 14px 40px;
+    padding: 24px 16px;
   }
 
   .card {
-    padding: 22px 16px;
+    padding: 24px 16px;
     border-radius: var(--r-lg);
   }
 
   .header__title {
-    font-size: 1.55rem;
+    font-size: 1.5rem;
   }
-@media (max-width: 700px) {
-  main {
-    max-width: 440px;
-  }
-  .card--input {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .card--input > *:nth-child(5),
-  .card--input > *:nth-child(6) {
-    grid-column: span 1;
-  }
-}
 
   .result__amount {
-    font-size: 2.6rem;
+    font-size: 3rem;
+  }
+
+  .result__message {
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 0.85rem;
   }
 }
