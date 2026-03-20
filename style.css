@@ -170,9 +170,9 @@ body {
 
 /* --- Layout --- */
 main {
-  width: 100%;
-  max-width: 440px;
-  padding: 48px 20px 60px;
+  width: 95%;
+  max-width: 800px;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -264,11 +264,16 @@ main {
 
 /* --- Input Card --- */
 .card--input {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
   animation: fadeUp 0.5s var(--ease-out) both;
   transition: all 0.5s var(--ease-out);
+}
+
+.card--input > *:nth-child(5),
+.card--input > *:nth-child(6) {
+  grid-column: span 2;
 }
 
 .card--minimized {
@@ -727,6 +732,19 @@ main {
   .header__title {
     font-size: 1.55rem;
   }
+@media (max-width: 700px) {
+  main {
+    max-width: 440px;
+  }
+  .card--input {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .card--input > *:nth-child(5),
+  .card--input > *:nth-child(6) {
+    grid-column: span 1;
+  }
+}
 
   .result__amount {
     font-size: 2.6rem;
