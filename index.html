@@ -24,7 +24,7 @@
     <!-- Header -->
     <header class="header">
       <div class="header__badge">💸 Meeting Cost Calculator</div>
-      <h1 class="header__title">How much is your<br/>meeting really costing?</h1>
+      <h1 class="header__title" id="headerTitle">This meeting is<br/>burning money 💸</h1>
       <p class="header__subtitle">Enter the details below to find out.</p>
     </header>
 
@@ -51,6 +51,12 @@
           <span class="input-label__icon">💰</span>
           Avg. Monthly Salary (₹)
         </label>
+        <div class="salary-presets">
+          <button class="preset-btn" data-value="30000">₹30k</button>
+          <button class="preset-btn" data-value="50000">₹50k</button>
+          <button class="preset-btn" data-value="100000">₹1L</button>
+          <button class="preset-btn" data-value="200000">₹2L+</button>
+        </div>
         <input
           type="number"
           id="salary"
@@ -65,17 +71,58 @@
       <div class="input-group">
         <label class="input-label" for="duration">
           <span class="input-label__icon">⏱️</span>
-          Meeting Duration (minutes)
+          Meeting Duration (minutes): <span id="durationVal">60</span>
         </label>
-        <input
-          type="number"
-          id="duration"
-          class="input-field"
-          min="1"
-          max="480"
-          value="60"
-          placeholder="e.g. 60"
-        />
+        <div class="slider-group">
+          <input
+            type="range"
+            id="durationSlider"
+            class="slider"
+            min="5"
+            max="240"
+            step="5"
+            value="60"
+          />
+          <input
+            type="number"
+            id="duration"
+            class="input-field input-field--small"
+            min="1"
+            max="480"
+            value="60"
+          />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="meetingType">
+          <span class="input-label__icon">📅</span>
+          Meeting Type
+        </label>
+        <select id="meetingType" class="input-field">
+          <option value="meeting">Standard Meeting</option>
+          <option value="status update">Status Update</option>
+          <option value="brainstorm">Brainstorm</option>
+          <option value="client call">Client Call</option>
+          <option value="internal sync">Internal Sync</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">
+          <span class="input-label__icon">🤔</span>
+          Was this meeting useful?
+        </label>
+        <div class="useful-toggle">
+          <label class="toggle-option">
+            <input type="radio" name="useful" value="yes" checked>
+            <span>Yes</span>
+          </label>
+          <label class="toggle-option">
+            <input type="radio" name="useful" value="no">
+            <span>No</span>
+          </label>
+        </div>
       </div>
 
       <button class="btn btn--primary" id="calculateBtn">
@@ -92,25 +139,22 @@
 
       <div class="shame-meter">
         <div class="shame-meter__header">
-          <span class="shame-meter__title">Shame Score</span>
-          <span class="shame-meter__value" id="shameValue">0</span>
+          <span class="shame-meter__title">Waste Level</span>
+          <span class="shame-meter__value" id="shameValue">LOW 🟢</span>
         </div>
         <div class="shame-meter__track">
           <div class="shame-meter__fill" id="shameFill"></div>
         </div>
-        <div class="shame-meter__ticks">
-          <span class="shame-meter__tick">0</span>
-          <span class="shame-meter__tick">25</span>
-          <span class="shame-meter__tick">50</span>
-          <span class="shame-meter__tick">75</span>
-          <span class="shame-meter__tick">100</span>
-        </div>
+      </div>
+
+      <div class="result__trust">
+        Built for teams tired of useless meetings
       </div>
 
       <div class="result__actions">
         <button class="btn btn--share" id="shareBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          <span id="shareBtnText">Share Result</span>
+          <span id="shareBtnText">Expose this meeting 😈</span>
         </button>
         <button class="btn btn--recalc" id="recalcBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>

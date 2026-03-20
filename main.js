@@ -19,6 +19,12 @@ const shareBtn       = $('#shareBtn');
 const shareBtnText   = $('#shareBtnText');
 const recalcBtn      = $('#recalcBtn');
 const themeToggle    = $('#themeToggle');
+const durationSlider = $('#durationSlider');
+const durationVal    = $('#durationVal');
+const meetingType    = $('#meetingType');
+const presetBtns     = document.querySelectorAll('.preset-btn');
+const headerTitle    = $('#headerTitle');
+const usefulInputs    = document.getElementsByName('useful');
 
 // --- Constants ---
 const WORKING_DAYS_PER_MONTH = 22;
@@ -55,6 +61,26 @@ function updateThemeIcon(theme) {
   }
 }
 
+// --- Presets ---
+presetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    salaryInput.value = btn.dataset.value;
+    presetBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// --- Duration Sync ---
+durationSlider.addEventListener('input', (e) => {
+  durationInput.value = e.target.value;
+  durationVal.textContent = e.target.value;
+});
+
+durationInput.addEventListener('input', (e) => {
+  durationSlider.value = e.target.value;
+  durationVal.textContent = e.target.value;
+});
+
 // --- Calculation ---
 function calculate(attendees, monthlySalary, durationMins) {
   const perMinute = monthlySalary / MINUTES_PER_MONTH;
@@ -62,39 +88,33 @@ function calculate(attendees, monthlySalary, durationMins) {
   return Math.round(totalCost);
 }
 
-function getFunMessage(cost) {
-  if (cost > 20000) return 'This meeting hurts 💀';
-  if (cost > 10000) return 'Expensive meeting 😬';
-  if (cost > 5000)  return "That's a pricey one 😭";
-  if (cost > 2000)  return 'Starting to add up 😅';
-  return 'Not bad, carry on 👍';
-}
-
-function getShameScore(cost) {
-  const tiers = [
-    { c: 0, s: 0 },
-    { c: 2000, s: 20 },
-    { c: 5000, s: 40 },
-    { c: 10000, s: 60 },
-    { c: 20000, s: 80 },
-    { c: 50000, s: 95 }
-  ];
-
-  for (let i = 0; i < tiers.length - 1; i++) {
-    if (cost <= tiers[i+1].c) {
-      const t = (cost - tiers[i].c) / (tiers[i+1].c - tiers[i].c);
-      return Math.min(100, Math.round(tiers[i].s + t * (tiers[i+1].s - tiers[i].s)));
-    }
+function getFunMessage(cost, isUseful, type) {
+  if (!isUseful) {
+    return `${formatCurrency(cost)} for a ${type}?? 💀`;
   }
-  return 95 + Math.min(5, Math.round((cost - 50000) / 100000 * 5));
+  if (cost < 2000)   return "Not terrible 🙂";
+  if (cost < 5000)   return "This could’ve been an email 😬";
+  if (cost < 15000)  return "Expensive meeting 💸";
+  if (cost < 50000)  return "This hurts 😵";
+  return "WHAT ARE YOU DOING 💀";
 }
 
-function getShameColor(score) {
-  if (score <= 20) return 'var(--shame-green)';
-  if (score <= 40) return 'var(--shame-lime)';
-  if (score <= 60) return 'var(--shame-yellow)';
-  if (score <= 80) return 'var(--shame-orange)';
-  return 'var(--shame-red)';
+function getWasteLevel(cost, isUseful) {
+  let score = 0;
+  if (cost < 2000) score = 0;
+  else if (cost < 5000) score = 1;
+  else if (cost < 15000) score = 2;
+  else score = 3;
+
+  if (!isUseful) score = Math.min(3, score + 1);
+
+  const levels = [
+    { label: "LOW 🟢", color: "var(--shame-green)", progress: 25 },
+    { label: "MEDIUM 😐", color: "var(--shame-yellow)", progress: 50 },
+    { label: "HIGH 😬", color: "var(--shame-orange)", progress: 75 },
+    { label: "INSANE 💀", color: "var(--shame-red)", progress: 100 }
+  ];
+  return levels[score];
 }
 
 // --- Format currency ---
@@ -146,19 +166,23 @@ function showResult() {
   const attendees = Number(attendeesInput.value);
   const salary    = Number(salaryInput.value);
   const duration  = Number(durationInput.value);
+  const type      = meetingType.value;
+  const isUseful   = Array.from(usefulInputs).find(i => i.checked).value === 'yes';
 
   const cost       = calculate(attendees, salary, duration);
-  const message    = getFunMessage(cost);
-  const shameScore = getShameScore(cost);
-  const shameColor = getShameColor(shameScore);
+  const message    = getFunMessage(cost, isUseful, type);
+  const waste      = getWasteLevel(cost, isUseful);
+
+  // Update Headline
+  headerTitle.innerHTML = `This meeting just<br/>wasted ${formatCurrency(cost)} 😬`;
 
   // Populate result
   resultMessage.textContent = message;
-  shameValue.textContent    = shameScore + '/100';
+  shameValue.textContent    = waste.label;
 
   // Animate shame bar (defer to trigger CSS transition)
   shameFill.style.width = '0%';
-  shameFill.style.backgroundColor = shameColor;
+  shameFill.style.backgroundColor = waste.color;
 
   // Reveal result card
   resultCard.classList.remove('hidden');
@@ -173,9 +197,19 @@ function showResult() {
   // Animate shame fill after a short delay
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      shameFill.style.width = shameScore + '%';
+      shameFill.style.width = waste.progress + '%';
     });
   });
+
+  // Step 2: Collapse input form
+  inputCard.classList.add('card--minimized');
+
+  // Step 2: Emoji Pop
+  const emoji = document.createElement('div');
+  emoji.className = 'emoji-pop';
+  emoji.textContent = waste.label.split(' ')[1] || '😬';
+  document.body.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 2000);
 
   // Scroll to result
   setTimeout(() => {
@@ -185,7 +219,7 @@ function showResult() {
   // Store for share
   resultCard.dataset.cost       = cost;
   resultCard.dataset.message    = message;
-  resultCard.dataset.shame      = shameScore;
+  resultCard.dataset.shame      = waste.label;
   resultCard.dataset.attendees  = attendees;
   resultCard.dataset.duration   = duration;
 }
@@ -195,7 +229,13 @@ async function shareResult() {
   const { cost, message, shame, attendees, duration } = resultCard.dataset;
 
   const emoji = message.includes('💀') ? '💀' : message.includes('😬') ? '😬' : message.includes('😭') ? '😭' : '👍';
-  const text = `My meeting just cost ${formatCurrency(Number(cost))} ${emoji}\n\nShame Score: ${shame}/100\n\nTry it: meeting-cost.app`;
+  const text = `I just calculated my meeting cost.
+
+${formatCurrency(Number(cost))} for ${duration} mins 😬
+
+Waste Level: ${shame}
+
+Try it: meeting-cost.app`;
 
   try {
     await navigator.clipboard.writeText(text);
@@ -226,6 +266,8 @@ async function shareResult() {
 // --- Recalculate ---
 function recalculate() {
   resultCard.classList.add('hidden');
+  inputCard.classList.remove('card--minimized');
+  headerTitle.innerHTML = `This meeting is<br/>burning money 💸`;
   attendeesInput.focus();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
