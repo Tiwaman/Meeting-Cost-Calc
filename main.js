@@ -26,6 +26,7 @@ const presetBtns     = document.querySelectorAll('.preset-btn');
 const shareMenu      = $('#shareMenu');
 const copyTextBtn    = $('#copyTextBtn');
 const exportImgBtn   = $('#exportImgBtn');
+const nativeShareBtn = $('#nativeShareBtn');
 const headerTitle    = $('#headerTitle');
 const usefulInputs    = document.getElementsByName('useful');
 
@@ -273,7 +274,14 @@ async function downloadResultImage() {
 
   try {
     const dataUrl = await htmlToImage.toPng(resultCard, {
-      backgroundColor: '#09090b',
+      backgroundColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#09090b' : '#ffffff',
+      filter: (node) => {
+        // Exclude the actions div and the share menu
+        if (node.classList && (node.classList.contains('result__actions') || node.classList.contains('share-menu'))) {
+          return false;
+        }
+        return true;
+      },
       style: {
         transform: 'scale(1)',
         margin: '0',
@@ -298,6 +306,74 @@ async function downloadResultImage() {
   }
 }
 
+async function shareResultNative() {
+  const { cost, shame, duration } = resultCard.dataset;
+  const originalBtnText = shareBtnText.textContent;
+  
+  if (!navigator.share) {
+    alert('Native sharing is not supported in this browser.');
+    return;
+  }
+
+  shareBtnText.textContent = 'Preparing...';
+  shareMenu.classList.add('hidden');
+
+  try {
+    // Generate the blob
+    const dataUrl = await htmlToImage.toPng(resultCard, {
+      backgroundColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#09090b' : '#ffffff',
+      filter: (node) => {
+        if (node.classList && (node.classList.contains('result__actions') || node.classList.contains('share-menu'))) {
+          return false;
+        }
+        return true;
+      },
+      style: { transform: 'scale(1)', margin: '0' }
+    });
+
+    const res  = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], `meeting-cost-${Date.now()}.png`, { type: 'image/png' });
+
+    const text = `I just calculated my meeting cost: ${formatCurrency(Number(cost))} for ${duration} mins. Waste Level: ${shame}. Try it: meeting-cost.app`;
+
+    const shareData = {
+      title: 'Meeting Cost Result',
+      text: text,
+      files: [file]
+    };
+
+    if (navigator.canShare && navigator.canShare(shareData)) {
+      await navigator.share(shareData);
+      shareBtnText.textContent = 'Shared! ✓';
+    } else {
+      // Fallback if files can't be shared
+      await navigator.share({
+        title: 'Meeting Cost Result',
+        text: text
+      });
+      shareBtnText.textContent = 'Text Shared! ✓';
+    }
+
+    setTimeout(() => {
+      shareBtnText.textContent = originalBtnText;
+    }, 2000);
+  } catch (err) {
+    console.error('Native share failed', err);
+    shareBtnText.textContent = 'Share Failed';
+    setTimeout(() => {
+      shareBtnText.textContent = originalBtnText;
+    }, 2000);
+  }
+}
+
+// Check for Web Share support
+function checkShareSupport() {
+  if (!navigator.share) {
+    nativeShareBtn.style.display = 'none';
+  }
+}
+
 // --- Recalculate ---
 function recalculate() {
   resultCard.classList.add('hidden');
@@ -312,6 +388,7 @@ calculateBtn.addEventListener('click', showResult);
 shareBtn.addEventListener('click', toggleShareMenu);
 copyTextBtn.addEventListener('click', copyResultText);
 exportImgBtn.addEventListener('click', downloadResultImage);
+nativeShareBtn.addEventListener('click', shareResultNative);
 recalcBtn.addEventListener('click', recalculate);
 themeToggle.addEventListener('click', toggleTheme);
 
@@ -322,5 +399,6 @@ themeToggle.addEventListener('click', toggleTheme);
   });
 });
 
-// Init theme on load
+// Init theme and features on load
+checkShareSupport();
 initTheme();
