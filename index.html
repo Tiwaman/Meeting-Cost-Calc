@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Cost Calculator — Know the real price of your meetings</title>
+  <meta name="description" content="Calculate exactly how much your meetings cost based on attendees, salaries, and duration. Stop wasting money!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main>
+    <!-- Top Bar -->
+    <div class="topbar">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header__badge">💸 Meeting Cost Calculator</div>
+      <h1 class="header__title">How much is your<br/>meeting really costing?</h1>
+      <p class="header__subtitle">Enter the details below to find out.</p>
+    </header>
+
+    <!-- Input Card -->
+    <section class="card card--input" id="inputCard">
+      <div class="input-group">
+        <label class="input-label" for="attendees">
+          <span class="input-label__icon">👥</span>
+          Number of Attendees
+        </label>
+        <input
+          type="number"
+          id="attendees"
+          class="input-field"
+          min="1"
+          max="500"
+          value="5"
+          placeholder="e.g. 5"
+        />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="salary">
+          <span class="input-label__icon">💰</span>
+          Avg. Monthly Salary (₹)
+        </label>
+        <input
+          type="number"
+          id="salary"
+          class="input-field"
+          min="1000"
+          step="1000"
+          value="80000"
+          placeholder="e.g. 80,000"
+        />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="duration">
+          <span class="input-label__icon">⏱️</span>
+          Meeting Duration (minutes)
+        </label>
+        <input
+          type="number"
+          id="duration"
+          class="input-field"
+          min="1"
+          max="480"
+          value="60"
+          placeholder="e.g. 60"
+        />
+      </div>
+
+      <button class="btn btn--primary" id="calculateBtn">
+        <span>Calculate Cost</span>
+        <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+    </section>
+
+    <!-- Result Card -->
+    <section class="card card--result hidden" id="resultCard">
+      <p class="result__label">Total Meeting Cost</p>
+      <h2 class="result__amount" id="resultAmount">₹0</h2>
+      <p class="result__message" id="resultMessage"></p>
+
+      <div class="shame-meter">
+        <div class="shame-meter__header">
+          <span class="shame-meter__title">Shame Score</span>
+          <span class="shame-meter__value" id="shameValue">0</span>
+        </div>
+        <div class="shame-meter__track">
+          <div class="shame-meter__fill" id="shameFill"></div>
+        </div>
+        <div class="shame-meter__ticks">
+          <span class="shame-meter__tick">0</span>
+          <span class="shame-meter__tick">25</span>
+          <span class="shame-meter__tick">50</span>
+          <span class="shame-meter__tick">75</span>
+          <span class="shame-meter__tick">100</span>
+        </div>
+      </div>
+
+      <div class="result__actions">
+        <button class="btn btn--share" id="shareBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          <span id="shareBtnText">Share Result</span>
+        </button>
+        <button class="btn btn--recalc" id="recalcBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Recalculate</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Every meeting has a cost 🧾</p>
+    </footer>
+  </main>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

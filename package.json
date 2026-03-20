@@ -1,0 +1,14 @@
+{
+  "name": "meeting-cost-calculator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Calculate the real cost of your meetings",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
