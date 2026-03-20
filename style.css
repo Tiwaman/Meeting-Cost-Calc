@@ -277,11 +277,12 @@ main {
 }
 
 .card--minimized {
-  opacity: 0.3;
-  transform: scale(0.9) translateY(-20px);
+  opacity: 0.1;
+  transform: scale(0.8) translateY(-40px);
   pointer-events: none;
-  filter: blur(2px) grayscale(0.5);
-  margin-bottom: -150px;
+  filter: blur(4px) grayscale(1);
+  margin-bottom: -220px;
+  z-index: 1;
 }
 
 @keyframes fadeUp {
@@ -530,6 +531,8 @@ main {
 .card--result {
   text-align: center;
   animation: resultReveal 0.55s var(--ease-out) both;
+  position: relative;
+  z-index: 10;
 }
 
 .card--result.hidden {
