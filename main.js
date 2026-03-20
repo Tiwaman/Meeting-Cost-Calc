@@ -335,7 +335,7 @@ async function shareResultNative() {
     const blob = await res.blob();
     const file = new File([blob], `meeting-cost-${Date.now()}.png`, { type: 'image/png' });
 
-    const text = `I just calculated my meeting cost: ${formatCurrency(Number(cost))} for ${duration} mins. Waste Level: ${shame}. Try it: meeting-cost.app`;
+    const text = `I just calculated my meeting cost: ${formatCurrency(Number(cost))} for ${duration} mins. Waste Level: ${shame}. Try it: https://www.aidevelopment.in/`;
 
     const shareData = {
       title: 'Meeting Cost Result',
